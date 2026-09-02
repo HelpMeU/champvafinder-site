@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost Estimator — CHAMPVA Finder</title>
+  <meta name="description" content="Estimate your out-of-pocket costs under CHAMPVA coverage.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-icon">⚕️</div>
+      <div class="nav-brand-text">CHAMPVA Finder<span class="nav-brand-sub">Provider Directory for Veterans & Families</span></div>
+    </a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">🔍 Find Providers</a></li>
+      <li><a href="claims.html">📋 Claims Guide</a></li>
+      <li><a href="cost.html" class="active">💰 Cost Estimator</a></li>
+      <li><a href="resources.html">📚 Family Resources</a></li>
+      <li><a href="submit.html">➕ Add Provider</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="hero hero-sm">
+  <div class="container">
+    <h1>💰 Cost Estimator</h1>
+    <div style="color:rgba(255,255,255,0.6);font-size:14px;margin-top:4px;">Estimate your out-of-pocket costs under CHAMPVA</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="container">
+
+    <div class="callout callout-info" style="margin-bottom:24px;">
+      <strong>How CHAMPVA cost-sharing works:</strong> After your annual deductible ($50 individual / $100 family), CHAMPVA pays 75% of covered charges. You pay the remaining 25%, up to a $3,000 annual catastrophic cap.
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+
+      <!-- INPUT PANEL -->
+      <div class="section-block">
+        <h3>Your Information</h3>
+
+        <div style="margin-bottom:16px;">
+          <label>Coverage Type</label>
+          <select id="coverageType" onchange="calculate()">
+            <option value="individual">Individual (deductible: $50)</option>
+            <option value="family">Family (deductible: $100)</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label>Deductible already met this year?</label>
+          <select id="deductibleMet" onchange="calculate()">
+            <option value="no">No — not yet met</option>
+            <option value="yes">Yes — fully met</option>
+            <option value="partial">Partially met</option>
+          </select>
+        </div>
+
+        <div id="partialDeductibleRow" style="margin-bottom:16px;display:none;">
+          <label>Amount of deductible already paid ($)</label>
+          <input type="number" id="deductiblePaid" min="0" max="100" value="0" oninput="calculate()">
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label>Total medical bill ($)</label>
+          <input type="number" id="billAmount" min="0" value="500" oninput="calculate()">
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label>Do you have other health insurance (OHI)?</label>
+          <select id="hasOHI" onchange="calculate()">
+            <option value="no">No — CHAMPVA is my only coverage</option>
+            <option value="yes">Yes — CHAMPVA is secondary</option>
+          </select>
+        </div>
+
+        <div id="ohiRow" style="margin-bottom:16px;display:none;">
+          <label>Amount already paid by primary insurance ($)</label>
+          <input type="number" id="ohiPaid" min="0" value="0" oninput="calculate()">
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label>Out-of-pocket already spent this year ($) <span style="font-weight:400;text-transform:none;font-size:11px;">(toward $3,000 cap)</span></label>
+          <input type="number" id="oopSpent" min="0" value="0" oninput="calculate()">
+        </div>
+      </div>
+
+      <!-- RESULTS PANEL -->
+      <div>
+        <div class="section-block" style="margin-bottom:16px;" id="resultsPanel">
+          <h3>Your Estimated Costs</h3>
+          <div id="resultsContent">
+            <div style="text-align:center;padding:20px 0;color:#9ca3af;">
+              <div style="font-size:28px;margin-bottom:8px;">💰</div>
+              <div style="font-size:14px;">Fill in your information to see your estimate</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <h3>CHAMPVA at a Glance</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="text-align:center;padding:12px;background:#F0F3F7;border-radius:10px;">
+              <div style="font-family:'DM Serif Display',serif;font-size:24px;color:#C9952A;">$50</div>
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Individual Deductible</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:#F0F3F7;border-radius:10px;">
+              <div style="font-family:'DM Serif Display',serif;font-size:24px;color:#C9952A;">$100</div>
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Family Deductible</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:#F0F3F7;border-radius:10px;">
+              <div style="font-family:'DM Serif Display',serif;font-size:24px;color:#C9952A;">75%</div>
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">CHAMPVA Pays</div>
+            </div>
+            <div style="text-align:center;padding:12px;background:#F0F3F7;border-radius:10px;">
+              <div style="font-family:'DM Serif Display',serif;font-size:24px;color:#C9952A;">$3,000</div>
+              <div style="font-size:11px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">Annual OOP Cap</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout" style="margin-top:8px;">
+      <strong>Note:</strong> This estimator is for general guidance only. Actual CHAMPVA payments depend on whether the service is covered, the CHAMPVA allowable rate, and your specific circumstances. For exact coverage questions, call 1-800-733-8387.
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">CHAMPVA Finder</div>
+  <p>A community resource for veteran families. Not affiliated with the U.S. Department of Veterans Affairs.<br>
+  For official information: <a href="https://www.va.gov" target="_blank" rel="noopener">va.gov</a> · CHAMPVA: <a href="tel:18007338387">1-800-733-8387</a></p>
+</footer>
+
+<script>
+const INDIV_DEDUCTIBLE  = 50;
+const FAMILY_DEDUCTIBLE = 100;
+const CHAMPVA_RATE      = 0.75;
+const CATASTROPHIC_CAP  = 3000;
+
+function fmt(n) {
+  return '$' + Math.max(0, n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function calculate() {
+  const coverageType    = document.getElementById('coverageType').value;
+  const deductibleMet   = document.getElementById('deductibleMet').value;
+  const billAmount      = parseFloat(document.getElementById('billAmount').value) || 0;
+  const hasOHI          = document.getElementById('hasOHI').value;
+  const oopSpent        = parseFloat(document.getElementById('oopSpent').value) || 0;
+
+  // Show/hide conditional rows
+  document.getElementById('partialDeductibleRow').style.display = deductibleMet === 'partial' ? 'block' : 'none';
+  document.getElementById('ohiRow').style.display = hasOHI === 'yes' ? 'block' : 'none';
+
+  const fullDeductible = coverageType === 'family' ? FAMILY_DEDUCTIBLE : INDIV_DEDUCTIBLE;
+  let remainingDeductible = 0;
+  if (deductibleMet === 'no') {
+    remainingDeductible = fullDeductible;
+  } else if (deductibleMet === 'partial') {
+    const paid = parseFloat(document.getElementById('deductiblePaid').value) || 0;
+    remainingDeductible = Math.max(0, fullDeductible - paid);
+  }
+
+  let billable = billAmount;
+  if (hasOHI === 'yes') {
+    const ohiPaid = parseFloat(document.getElementById('ohiPaid').value) || 0;
+    billable = Math.max(0, billAmount - ohiPaid);
+  }
+
+  const deductibleApplied = Math.min(billable, remainingDeductible);
+  const afterDeductible   = Math.max(0, billable - deductibleApplied);
+  const champvaPays       = afterDeductible * CHAMPVA_RATE;
+  let   yourCoinsurance   = afterDeductible * (1 - CHAMPVA_RATE);
+  const totalOOP          = deductibleApplied + yourCoinsurance;
+  const remainingCap      = Math.max(0, CATASTROPHIC_CAP - oopSpent);
+  const capApplied        = yourCoinsurance > remainingCap;
+  if (capApplied) yourCoinsurance = remainingCap;
+
+  const html = `
+    <div style="display:grid;gap:10px;">
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#F0F3F7;border-radius:9px;">
+        <span style="font-size:14px;color:#374151;">Total bill</span>
+        <span style="font-weight:700;color:#111827;">${fmt(billAmount)}</span>
+      </div>
+      ${hasOHI==='yes'?`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:#dcfce7;border-radius:9px;">
+        <span style="font-size:14px;color:#374151;">Primary insurance pays</span>
+        <span style="font-weight:700;color:#16a34a;">− ${fmt(parseFloat(document.getElementById('ohiPaid').value)||0)}</span>
+      </div>`:''}
+      ${remainingDeductible>0?`<div style="display:flex;justify-content:space-between;padding:10px 14px;background:#fef3c7;border-radius:9px;">
+        <span style="font-size:14px;color:#374151;">Your deductible</span>
+        <span style="font-weight:700;color:#d97706;">− ${fmt(deductibleApplied)}</span>
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;padding:10px 14px;background:#dcfce7;border-radius:9px;">
+        <span style="font-size:14px;color:#374151;">CHAMPVA pays (75%)</span>
+        <span style="font-weight:700;color:#16a34a;">− ${fmt(champvaPays)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:14px 16px;background:#0B1F3A;border-radius:10px;">
+        <span style="font-size:15px;color:rgba(255,255,255,0.8);font-weight:600;">Your estimated cost</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:22px;color:#f0c060;">${fmt(deductibleApplied + yourCoinsurance)}</span>
+      </div>
+      ${capApplied?`<div class="callout callout-success" style="margin:0;">Your catastrophic cap has been reached — you owe nothing more this year for covered services.</div>`:''}
+      <div style="padding:10px 14px;background:#F0F3F7;border-radius:9px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#9ca3af;margin-bottom:4px;">Remaining toward $3,000 cap</div>
+        <div style="background:#e2e8f0;border-radius:6px;height:8px;overflow:hidden;">
+          <div style="background:#C9952A;height:100%;width:${Math.min(100,(oopSpent+deductibleApplied+yourCoinsurance)/CATASTROPHIC_CAP*100).toFixed(1)}%;transition:width .3s;"></div>
+        </div>
+        <div style="font-size:13px;color:#374151;margin-top:5px;">${fmt(oopSpent + deductibleApplied + yourCoinsurance)} of ${fmt(CATASTROPHIC_CAP)} annual cap used</div>
+      </div>
+    </div>`;
+
+  document.getElementById('resultsContent').innerHTML = html;
+}
+
+calculate();
+</script>
+</body>
+</html>

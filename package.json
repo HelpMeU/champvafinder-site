@@ -1,0 +1,8 @@
+{
+  "name": "champva-finder",
+  "private": true,
+  "description": "champvafinder.org — static site + Netlify Functions for crowd-sourced provider submissions",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}

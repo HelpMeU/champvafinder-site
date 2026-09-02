@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHAMPVA Finder — Provider Directory for Veterans & Families</title>
+  <meta name="description" content="Find CHAMPVA providers near you. A free, community-powered directory for veteran families.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-icon">⚕️</div>
+      <div class="nav-brand-text">CHAMPVA Finder<span class="nav-brand-sub">Provider Directory for Veterans & Families</span></div>
+    </a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">🔍 Find Providers</a></li>
+      <li><a href="claims.html">📋 Claims Guide</a></li>
+      <li><a href="cost.html">💰 Cost Estimator</a></li>
+      <li><a href="resources.html">📚 Family Resources</a></li>
+      <li><a href="submit.html">➕ Add Provider</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Free · Community-Powered · Veteran Focused</div>
+  <h1>Find CHAMPVA Providers<br><span>Who Actually Know How to Use It</span></h1>
+  <p class="hero-sub">Real notes from veteran families. New listings go live immediately and get more trusted as the community confirms them — look for the ✓ confirmed note, and help out by confirming or reporting listings you have first-hand experience with.</p>
+</div>
+
+<div class="page-wrap">
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:22px;align-items:start;">
+
+    <!-- LEFT: Filters + Results -->
+    <div>
+      <!-- Search bar -->
+      <div class="section-block" style="margin-bottom:14px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:180px;">
+            <label>Search by name, city, or ZIP</label>
+            <input type="text" id="search" placeholder="e.g. Austin, pediatrics, 78701..." oninput="renderResults()">
+          </div>
+          <div style="min-width:140px;">
+            <label>State</label>
+            <select id="stateFilter" onchange="renderResults()">
+              <option value="">All States</option>
+            </select>
+          </div>
+          <div style="min-width:160px;">
+            <label>Specialty / Type</label>
+            <select id="typeFilter" onchange="renderResults()">
+              <option value="">All Types</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#374151;text-transform:none;letter-spacing:0;font-weight:500;margin-bottom:0;">
+            <input type="checkbox" id="filterNew" onchange="renderResults()" style="width:auto;accent-color:#0B1F3A;">
+            Accepting new patients
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:#374151;text-transform:none;letter-spacing:0;font-weight:500;margin-bottom:0;">
+            <input type="checkbox" id="filterTelehealth" onchange="renderResults()" style="width:auto;accent-color:#0B1F3A;">
+            Telehealth available
+          </label>
+        </div>
+      </div>
+
+      <!-- Results count -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div id="resultCount" style="font-size:13px;color:#6b7280;font-weight:600;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:#9ca3af;">CHAMPVA Experience:</span>
+          <span class="badge badge-expert" style="font-size:10px;">Expert</span>
+          <span class="badge badge-familiar" style="font-size:10px;">Familiar</span>
+          <span class="badge badge-learning" style="font-size:10px;">Learning</span>
+          <span class="badge badge-unverified" style="font-size:10px;">Unverified</span>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="card-grid" style="grid-template-columns:1fr;"></div>
+    </div>
+
+    <!-- RIGHT: Detail panel -->
+    <div>
+      <div class="detail-panel" id="detailPanel">
+        <div style="text-align:center;padding:32px 0;color:#9ca3af;">
+          <div style="font-size:40px;margin-bottom:12px;">🔍</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:17px;color:#374151;margin-bottom:6px;">Select a provider</div>
+          <div style="font-size:13px;line-height:1.6;">Click any card on the left to see full details, contact info, and directions.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">CHAMPVA Finder</div>
+  <p>A community resource for veteran families. Not affiliated with the U.S. Department of Veterans Affairs.<br>
+  For official information: <a href="https://www.va.gov" target="_blank" rel="noopener">va.gov</a> · CHAMPVA: <a href="tel:18007338387">1-800-733-8387</a></p>
+</footer>
+
+<script src="providers.js"></script>
+<script>
+  // ALL_PROVIDERS starts as the static seed/CMS-imported list from
+  // providers.js, then gets community submissions + vote status merged in
+  // once the list-providers function responds. Search/filter/render all
+  // operate on ALL_PROVIDERS, never the raw PROVIDERS constant, so results
+  // update in place when the fetch completes.
+  let ALL_PROVIDERS = PROVIDERS.map(p => ({ ...p, confirmCount: 0, reportCount: 0, verified: false }));
+  let selectedId = null;
+
+  function getVoterToken() {
+    const KEY = 'champva-voter-token';
+    try {
+      let token = localStorage.getItem(KEY);
+      if (!token) {
+        token = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+        localStorage.setItem(KEY, token);
+      }
+      return token;
+    } catch {
+      // localStorage unavailable (private browsing, blocked storage) — fall
+      // back to a per-page-load token. Voting still works, just without
+      // cross-visit dedup for this one visitor.
+      return `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+  }
+
+  function populateFilterOptions() {
+    const stateSel = document.getElementById('stateFilter');
+    const typeSel = document.getElementById('typeFilter');
+    const currentState = stateSel.value, currentType = typeSel.value;
+    const states = [...new Set(ALL_PROVIDERS.map(p=>p.state))].sort();
+    const types  = [...new Set(ALL_PROVIDERS.map(p=>p.type))].sort();
+    stateSel.innerHTML = '<option value="">All States</option>' + states.map(s=>`<option value="${s}">${s}</option>`).join('');
+    typeSel.innerHTML = '<option value="">All Types</option>' + types.map(t=>`<option value="${t}">${t}</option>`).join('');
+    stateSel.value = currentState; typeSel.value = currentType;
+  }
+
+  function renderResults() {
+    const visible = ALL_PROVIDERS.filter(p => !p.hidden);
+    const filtered = filterProviders(visible, {
+      state: document.getElementById('stateFilter').value,
+      type:  document.getElementById('typeFilter').value,
+      acceptingNew: document.getElementById('filterNew').checked,
+      telehealth:   document.getElementById('filterTelehealth').checked,
+      search: document.getElementById('search').value.trim(),
+    });
+    document.getElementById('resultCount').textContent = `${filtered.length} provider${filtered.length!==1?'s':''} found`;
+    document.getElementById('results').innerHTML = filtered.length
+      ? filtered.map(p => providerCardHTML(p)).join('')
+      : `<div style="text-align:center;padding:40px;color:#9ca3af;">
+           <div style="font-size:32px;margin-bottom:10px;">🔍</div>
+           <div style="font-weight:600;color:#374151;margin-bottom:4px;">No providers match your filters</div>
+           <div style="font-size:14px;">Try broadening your search or clearing filters.</div>
+         </div>`;
+    // Re-select the previously open detail panel if it's still visible.
+    if (selectedId !== null) {
+      const stillThere = filtered.find(p => String(p.id) === String(selectedId));
+      if (stillThere) showDetail(selectedId, { skipScroll: true });
+    }
+  }
+
+  function showDetail(id, opts) {
+    const p = ALL_PROVIDERS.find(x => String(x.id) === String(id));
+    if (!p) return;
+    selectedId = id;
+    document.querySelectorAll('.provider-card').forEach(c => c.classList.remove('selected'));
+    document.querySelector(`.provider-card[data-id="${CSS.escape(String(id))}"]`)?.classList.add('selected');
+    document.getElementById('detailPanel').innerHTML = detailPanelHTML(p);
+    if (!opts?.skipScroll && window.innerWidth < 900) {
+      document.getElementById('detailPanel').scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+  }
+
+  async function castVote(id, action, buttonEl) {
+    const row = buttonEl.closest('.vote-row');
+    const feedback = row.querySelector('.vote-feedback');
+    row.querySelectorAll('.vote-btn').forEach(b => b.disabled = true);
+    try {
+      const res = await fetch('/.netlify/functions/vote-provider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, action, voterToken: getVoterToken() }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) throw new Error(data.error || 'Vote failed');
+
+      const p = ALL_PROVIDERS.find(x => String(x.id) === String(id));
+      if (p) {
+        p.confirmCount = data.confirmCount;
+        p.reportCount = data.reportCount;
+        p.verified = data.verified;
+        p.hidden = data.hidden;
+      }
+      feedback.style.display = 'inline';
+      feedback.textContent = data.alreadyVoted
+        ? "You've already voted on this listing."
+        : (action === 'confirm' ? 'Thanks for confirming!' : 'Thanks — reported.');
+
+      // Re-render so the ribbon/badge/visibility reflect the new vote
+      // immediately, without waiting for the next full data refresh.
+      renderResults();
+    } catch (err) {
+      row.querySelectorAll('.vote-btn').forEach(b => b.disabled = false);
+      feedback.style.display = 'inline';
+      feedback.textContent = 'Something went wrong — try again.';
+    }
+  }
+
+  async function loadDynamicProviders() {
+    try {
+      const res = await fetch('/.netlify/functions/list-providers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ staticIds: PROVIDERS.map(p => p.id) }),
+      });
+      if (!res.ok) return; // static list still works fine on its own
+      const data = await res.json();
+      if (!data.ok) return;
+
+      // Apply computed vote status to the static providers.
+      ALL_PROVIDERS = PROVIDERS.map(p => {
+        const v = data.staticVotes?.[String(p.id)] || { confirmCount:0, reportCount:0, verified:false, hidden:false };
+        return { ...p, ...v };
+      });
+      // Append community submissions (already carry their own vote status
+      // and source:"community" from the function).
+      ALL_PROVIDERS = ALL_PROVIDERS.concat(data.dynamicProviders || []);
+
+      populateFilterOptions();
+      renderResults();
+    } catch {
+      // Network hiccup or functions not deployed yet — the page still
+      // works fine with just the static providers loaded at page load.
+    }
+  }
+
+  // Responsive: stack on mobile
+  function checkLayout() {
+    const wrap = document.querySelector('.page-wrap > div');
+    if (!wrap) return;
+    if (window.innerWidth < 900) {
+      wrap.style.gridTemplateColumns = '1fr';
+    } else {
+      wrap.style.gridTemplateColumns = '1fr 340px';
+    }
+  }
+  window.addEventListener('resize', checkLayout);
+  checkLayout();
+
+  populateFilterOptions();
+  renderResults();
+  loadDynamicProviders();
+</script>
+</body>
+</html>

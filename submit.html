@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add a Provider — CHAMPVA Finder</title>
+  <meta name="description" content="Submit a CHAMPVA-friendly provider to help other veteran families.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-icon">⚕️</div>
+      <div class="nav-brand-text">CHAMPVA Finder<span class="nav-brand-sub">Provider Directory for Veterans & Families</span></div>
+    </a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">🔍 Find Providers</a></li>
+      <li><a href="claims.html">📋 Claims Guide</a></li>
+      <li><a href="cost.html">💰 Cost Estimator</a></li>
+      <li><a href="resources.html">📚 Family Resources</a></li>
+      <li><a href="submit.html" class="active">➕ Add Provider</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="hero hero-sm">
+  <div class="container">
+    <h1>➕ Add a Provider</h1>
+    <div style="color:rgba(255,255,255,0.6);font-size:14px;margin-top:4px;">Help other veteran families by sharing a provider who bills CHAMPVA</div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="container" style="max-width:680px;">
+
+    <div class="callout callout-info" style="margin-bottom:24px;">
+      <strong>Why this matters:</strong> CHAMPVA doesn't require providers to enroll — any willing provider can bill it. If you've found one who does it well, sharing that helps every veteran family in your area.
+    </div>
+
+    <div class="callout callout-warn" style="margin-bottom:24px;">
+      <strong>Your listing goes live immediately</strong> — there's no manual review queue. Other visitors can confirm it's accurate or report a problem, and enough confirmations upgrade its badge. Please only submit real, accurate information about providers you have direct experience with.
+    </div>
+
+    <div id="formError" class="callout" style="display:none;border-left-color:#dc2626;background:#fee2e2;color:#7f1d1d;"></div>
+
+    <form id="providerForm" style="display:flex;flex-direction:column;gap:0;">
+
+      <!-- Honeypot: real visitors never see or fill this. Bots that fill
+           every field on a page often fill this too — if it's non-empty,
+           the backend silently discards the submission. -->
+      <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+        <label for="company">Leave this field blank</label>
+        <input type="text" id="company" name="company" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="section-block">
+        <h3>Provider Information</h3>
+        <div style="display:grid;gap:14px;">
+
+          <div>
+            <label for="provName">Practice / Provider Name *</label>
+            <input type="text" id="provName" name="name" placeholder="e.g. Riverside Family Medicine" required maxlength="120">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label for="provType">Provider Type *</label>
+              <select id="provType" name="type" required>
+                <option value="">Select type…</option>
+                <option>Primary Care</option>
+                <option>Specialist</option>
+                <option>Mental Health</option>
+                <option>Pediatrics</option>
+                <option>OB/GYN</option>
+                <option>Dental</option>
+                <option>Urgent Care</option>
+                <option>Physical Therapy</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="provPhone">Phone Number *</label>
+              <input type="tel" id="provPhone" name="phone" placeholder="(555) 555-5555" required>
+            </div>
+          </div>
+
+          <div>
+            <label for="provAddress">Street Address *</label>
+            <input type="text" id="provAddress" name="address" placeholder="123 Main Street" required maxlength="120">
+          </div>
+
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;">
+            <div>
+              <label for="provCity">City *</label>
+              <input type="text" id="provCity" name="city" placeholder="City" required maxlength="60">
+            </div>
+            <div>
+              <label for="provState">State *</label>
+              <input type="text" id="provState" name="state" placeholder="TX" maxlength="2" required>
+            </div>
+            <div>
+              <label for="provZip">ZIP *</label>
+              <input type="text" id="provZip" name="zip" placeholder="78701" maxlength="10" required>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section-block">
+        <h3>CHAMPVA Experience</h3>
+        <div style="display:grid;gap:14px;">
+
+          <div>
+            <label for="provExperience">How experienced is this provider with CHAMPVA billing?</label>
+            <select id="provExperience" name="champva_experience">
+              <option value="Expert">Expert — they bill CHAMPVA regularly and handle everything</option>
+              <option value="Familiar">Familiar — they know how but may need some prompting</option>
+              <option value="Learning">Learning — new to CHAMPVA, proceed with some caution</option>
+            </select>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <label for="provAccepting">Accepting new CHAMPVA patients?</label>
+              <select id="provAccepting" name="accepting_new">
+                <option value="Yes">Yes</option>
+                <option value="No">No / Waitlist</option>
+              </select>
+            </div>
+            <div>
+              <label for="provTelehealth">Telehealth available?</label>
+              <select id="provTelehealth" name="telehealth">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="provNotes">Notes for other families — what should they know?</label>
+            <textarea id="provNotes" name="notes" rows="3" maxlength="800"
+              placeholder="e.g. 'They have a dedicated CHAMPVA coordinator — billing is seamless. Highly recommend calling ahead to mention CHAMPVA.'"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn btn-navy"
+        style="width:100%;justify-content:center;padding:13px;font-size:15px;border-radius:10px;">
+        Submit Provider →
+      </button>
+      <p style="text-align:center;font-size:12px;color:#9ca3af;margin-top:10px;">
+        Goes live immediately. Other families can confirm or report it — thank you for helping the veteran community.
+      </p>
+
+    </form>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">CHAMPVA Finder</div>
+  <p>A community resource for veteran families. Not affiliated with the U.S. Department of Veterans Affairs.<br>
+  For official information: <a href="https://www.va.gov" target="_blank" rel="noopener">va.gov</a> · CHAMPVA: <a href="tel:18007338387">1-800-733-8387</a></p>
+</footer>
+
+<script>
+  // Recorded the moment this form rendered — sent along with the
+  // submission so the backend can reject anything filled out
+  // implausibly fast (a strong bot signal). See netlify/functions/_config.js
+  // MIN_FILL_TIME_MS.
+  const formRenderedAt = Date.now();
+
+  document.getElementById('providerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const submitBtn = document.getElementById('submitBtn');
+    const errorBox = document.getElementById('formError');
+    errorBox.style.display = 'none';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const payload = {
+      company: form.company.value, // honeypot
+      renderedAt: formRenderedAt,
+      name: form.name.value,
+      type: form.type.value,
+      phone: form.phone.value,
+      address: form.address.value,
+      city: form.city.value,
+      state: form.state.value,
+      zip: form.zip.value,
+      champva_experience: form.champva_experience.value,
+      accepting_new: form.accepting_new.value,
+      telehealth: form.telehealth.value,
+      notes: form.notes.value,
+    };
+
+    try {
+      const res = await fetch('/.netlify/functions/submit-provider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || 'Something went wrong submitting this provider.');
+      }
+      window.location.href = 'thankyou.html';
+    } catch (err) {
+      errorBox.textContent = err.message || 'Something went wrong. Please check the form and try again.';
+      errorBox.style.display = 'block';
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Provider →';
+    }
+  });
+</script>
+</body>
+</html>

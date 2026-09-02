@@ -1,0 +1,17 @@
+[
+  {"id": 1, "name": "Riverside Family Medicine", "city": "Austin", "state": "TX"},
+  {"id": 2, "name": "Lone Star Orthopedics", "city": "Austin", "state": "TX"},
+  {"id": 3, "name": "HealthBridge Pediatrics", "city": "Austin", "state": "TX"},
+  {"id": 4, "name": "Gateway Internal Medicine", "city": "Phoenix", "state": "AZ"},
+  {"id": 5, "name": "Desert Sun Mental Health", "city": "Phoenix", "state": "AZ"},
+  {"id": 6, "name": "Cascade Dermatology Group", "city": "Portland", "state": "OR"},
+  {"id": 7, "name": "Pacific Northwest OB/GYN", "city": "Portland", "state": "OR"},
+  {"id": 8, "name": "Mile High Cardiology", "city": "Denver", "state": "CO"},
+  {"id": 9, "name": "Front Range Family Dentistry", "city": "Denver", "state": "CO"},
+  {"id": 10, "name": "Magnolia Women's Health", "city": "Charlotte", "state": "NC"},
+  {"id": 11, "name": "Triad Behavioral Health", "city": "Greensboro", "state": "NC"},
+  {"id": 12, "name": "Veterans Village Urgent Care", "city": "Northridge", "state": "CA"},
+  {"id": 13, "name": "Bay Area Neurology Associates", "city": "San Francisco", "state": "CA"},
+  {"id": 14, "name": "Heartland Pediatric Therapy", "city": "Overland Park", "state": "KS"},
+  {"id": 15, "name": "Peachtree Dermatology & Skin", "city": "Atlanta", "state": "GA"}
+]

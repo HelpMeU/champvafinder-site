@@ -1,0 +1,3 @@
+# champvafinder.org — Netlify redirects
+/provider-billing  /claims.html    301
+/family-resources  /resources.html 301
