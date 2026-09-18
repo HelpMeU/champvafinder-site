@@ -13,12 +13,18 @@
 <!-- NAV -->
 <nav class="site-nav">
   <div class="nav-inner">
-    <a href="/" class="nav-brand">CHAMPVA <span>Finder</span></a>
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-icon">⚕️</div>
+      <div class="nav-brand-text">CHAMPVA Finder<span class="nav-brand-sub">Provider Directory for Veterans & Families</span></div>
+    </a>
+    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
     <ul class="nav-links">
-      <li><a href="/">Find Providers</a></li>
-      <li><a href="/provider-billing">Provider Billing Guide</a></li>
-      <li><a href="/resources" class="active">Family Resources</a></li>
-      <li><a href="/about">About</a></li>
+      <li><a href="index.html">🔍 Find Providers</a></li>
+      <li><a href="claims.html">📋 Claims Guide</a></li>
+      <li><a href="cost.html">💰 Cost Estimator</a></li>
+      <li><a href="resources.html" class="active">📚 Family Resources</a></li>
+      <li><a href="submit.html">➕ Add Provider</a></li>
+      <li><a href="about.html">ℹ️ About</a></li>
     </ul>
   </div>
 </nav>
@@ -82,7 +88,7 @@
     </div>
     <div class="spot-links">
       <a class="spot-link" href="https://www.va.gov/CHAMPVA" target="_blank" rel="noopener">Apply for CHAMPVA ↗</a>
-      <a class="spot-link outline" href="/" >Find CHAMPVA Providers →</a>
+      <a class="spot-link outline" href="index.html">Find CHAMPVA Providers →</a>
       <a class="spot-link outline" href="tel:18007338387">📞 1-800-733-8387</a>
     </div>
   </div>
@@ -110,8 +116,8 @@
       <span class="card-who" data-cat="health">CHAMPVA Beneficiaries</span>
       <div class="card-desc">CHAMPVA doesn't require providers to enroll — any willing provider can bill. Use this directory to find providers who have confirmed they accept CHAMPVA, so you spend less time calling around.</div>
       <div class="card-links">
-        <a class="card-link" href="/">Search Providers →</a>
-        <a class="card-link outline" style="border:1px solid rgba(45,64,112,0.25); color:var(--navy-light);" href="/provider-billing">Billing Guide for Providers ↗</a>
+        <a class="card-link" href="index.html">Search Providers →</a>
+        <a class="card-link outline" style="border:1px solid rgba(45,64,112,0.25); color:var(--navy-light);" href="claims.html">Billing Guide for Providers ↗</a>
       </div>
     </div>
 
